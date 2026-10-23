@@ -1,0 +1,27 @@
+# Configuración para publicar en Render (plan gratuito).
+# La dirección queda como https://sgp-seguros.onrender.com
+services:
+  - type: web
+    name: sgp-seguros
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/contenido
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USUARIO
+        value: admin
+      - key: ADMIN_CLAVE
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GMAIL_USUARIO
+        sync: false
+      - key: GMAIL_CLAVE_APP
+        sync: false

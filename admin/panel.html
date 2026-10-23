@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Panel · SGP Seguros</title>
+  <link rel="icon" href="/img/logo.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,800&display=swap">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-fila gutter">
+      <a class="marca" href="/admin/"><img src="/img/logo.png" alt=""><span><b>SGP SEGUROS</b><small>Panel de administrador</small></span></a>
+      <div class="barra-acciones">
+        <a class="btn btn-claro" href="/" target="_blank" rel="noopener">Ver sitio</a>
+        <button class="btn btn-claro" id="salir" type="button">Salir</button>
+      </div>
+    </div>
+    <div class="franja"></div>
+    <nav class="pestanas" aria-label="Secciones del panel">
+      <div class="pestanas-in gutter" role="tablist">
+        <button class="pestana" role="tab" data-vista="agenda" aria-selected="true">Agenda <span class="contador" id="cont-pendientes" hidden></span></button>
+        <button class="pestana" role="tab" data-vista="mensajes" aria-selected="false">Mensajes <span class="contador" id="cont-mensajes" hidden></span></button>
+        <button class="pestana" role="tab" data-vista="horarios" aria-selected="false">Horarios y bloqueos</button>
+        <button class="pestana" role="tab" data-vista="seguros" aria-selected="false">Seguros y precios</button>
+        <button class="pestana" role="tab" data-vista="fotos" aria-selected="false">Fotos</button>
+        <button class="pestana" role="tab" data-vista="ajustes" aria-selected="false">Datos del negocio</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="gutter">
+    <!-- AGENDA -->
+    <section class="vista" id="vista-agenda">
+      <div class="cabeza"><div><h2>Agenda</h2><p>Confirme, cancele o marque como atendidas las citas.</p></div></div>
+      <div class="resumen">
+        <div class="cifra"><b id="r-hoy">0</b><span>Citas hoy</span></div>
+        <div class="cifra"><b id="r-pend">0</b><span>Por confirmar</span></div>
+        <div class="cifra"><b id="r-msj">0</b><span>Mensajes sin leer</span></div>
+      </div>
+      <div class="controles-agenda">
+        <div class="selector" role="group" aria-label="Ver por">
+          <button type="button" data-modo="dia" aria-pressed="false">Día</button>
+          <button type="button" data-modo="semana" aria-pressed="true">Semana</button>
+        </div>
+        <button class="btn" type="button" id="ag-ant" aria-label="Anterior">‹</button>
+        <button class="btn" type="button" id="ag-hoy">Hoy</button>
+        <button class="btn" type="button" id="ag-sig" aria-label="Siguiente">›</button>
+        <strong id="ag-titulo"></strong>
+      </div>
+      <div class="semana vista-semana" id="ag-semana"></div>
+    </section>
+
+    <!-- MENSAJES -->
+    <section class="vista" id="vista-mensajes" hidden>
+      <div class="cabeza"><div><h2>Mensajes</h2><p>Lo que escriben en el formulario de contacto.</p></div></div>
+      <div class="lista dos" id="lista-mensajes"></div>
+    </section>
+
+    <!-- HORARIOS -->
+    <section class="vista" id="vista-horarios" hidden>
+      <div class="cabeza"><div><h2>Horarios y bloqueos</h2><p>Defina cuándo se pueden agendar citas.</p></div></div>
+      <div class="dos-col">
+        <form class="tarjeta" id="form-horarios">
+          <h3>Horario de atención</h3>
+          <p class="nota">Puede poner varios bloques por día, por ejemplo 8:00–12:00 y 14:00–18:00.</p>
+          <div id="dias-horario"></div>
+          <div class="rejilla tres" style="margin-top:14px">
+            <label class="campo" for="h-duracion"><span>Duración de cita (min)</span><input id="h-duracion" type="number" min="10" max="240" step="5"></label>
+            <label class="campo" for="h-cupos"><span>Citas a la misma hora</span><input id="h-cupos" type="number" min="1" max="50"></label>
+            <label class="campo" for="h-anticipacion"><span>Anticipación mínima (horas)</span><input id="h-anticipacion" type="number" min="0" max="168" step="0.5"></label>
+          </div>
+          <label class="campo" for="h-dias"><span>Se puede agendar hasta (días adelante)</span><input id="h-dias" type="number" min="1" max="365"></label>
+          <button class="btn btn-primario" type="submit">Guardar horario</button>
+        </form>
+
+        <div class="vista">
+          <form class="tarjeta" id="form-bloqueo">
+            <h3>Bloquear un día u horas</h3>
+            <p class="nota">Para festivos, vacaciones o compromisos. Las horas bloqueadas no aparecen en la página.</p>
+            <label class="campo" for="b-fecha"><span>Fecha</span><input id="b-fecha" type="date" required></label>
+            <label class="check" for="b-completo"><input id="b-completo" type="checkbox" checked> Todo el día</label>
+            <div class="rejilla dos" id="b-horas" hidden>
+              <label class="campo" for="b-inicio"><span>Desde</span><input id="b-inicio" type="time" step="900"></label>
+              <label class="campo" for="b-fin"><span>Hasta</span><input id="b-fin" type="time" step="900"></label>
+            </div>
+            <label class="campo" for="b-motivo"><span>Motivo (opcional)</span><input id="b-motivo" maxlength="160" placeholder="Ej.: festivo"></label>
+            <button class="btn btn-primario" type="submit">Bloquear</button>
+          </form>
+          <div class="tarjeta"><h3>Próximos bloqueos</h3><div class="lista" id="lista-bloqueos"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGUROS -->
+    <section class="vista" id="vista-seguros" hidden>
+      <div class="cabeza"><div><h2>Seguros y precios</h2><p>Lo que aparece en las secciones "Portafolio" y "Planes".</p></div>
+        <button class="btn btn-primario" type="button" id="nuevo-seguro">+ Nuevo seguro</button></div>
+      <form class="tarjeta" id="form-seguro" hidden>
+        <h3 id="titulo-form-seguro">Nuevo seguro</h3>
+        <input type="hidden" id="s-id">
+        <div class="rejilla dos">
+          <label class="campo" for="s-nombre"><span>Nombre</span><input id="s-nombre" required maxlength="120"></label>
+          <label class="campo" for="s-categoria"><span>Plan / categoría</span><input id="s-categoria" list="categorias" maxlength="60" placeholder="Personas, Hogar y familia, Empresas"></label>
+        </div>
+        <datalist id="categorias"><option value="Personas"></option><option value="Hogar y familia"></option><option value="Empresas"></option></datalist>
+        <label class="campo" for="s-descripcion"><span>Descripción corta</span><textarea id="s-descripcion" maxlength="600" rows="2"></textarea></label>
+        <label class="campo" for="s-coberturas"><span>Coberturas (una por línea)</span><textarea id="s-coberturas" rows="4"></textarea></label>
+        <div class="rejilla tres">
+          <label class="campo" for="s-precio"><span>Precio (vacío = "Cotización sin costo")</span><input id="s-precio" maxlength="80" placeholder="Ej.: Desde $85.000 al mes"></label>
+          <label class="campo" for="s-imagen"><span>Foto</span><select id="s-imagen"></select></label>
+          <label class="campo" for="s-orden"><span>Orden</span><input id="s-orden" type="number"></label>
+        </div>
+        <label class="check" for="s-destacado"><input id="s-destacado" type="checkbox"> Destacar su plan como "Más solicitado"</label>
+        <div class="fila-botones"><button class="btn btn-primario" type="submit">Guardar</button><button class="btn" type="button" id="cancelar-seguro">Cancelar</button></div>
+      </form>
+      <div class="lista dos" id="lista-seguros"></div>
+    </section>
+
+    <!-- FOTOS -->
+    <section class="vista" id="vista-fotos" hidden>
+      <div class="cabeza"><div><h2>Fotos</h2><p>Galería de la página. JPG, PNG o WEBP de máximo 5 MB.</p></div></div>
+      <form class="tarjeta" id="form-foto">
+        <div class="rejilla dos">
+          <label class="campo" for="f-archivo"><span>Imagen</span><input id="f-archivo" type="file" accept="image/jpeg,image/png,image/webp" required></label>
+          <label class="campo" for="f-descripcion"><span>Descripción</span><input id="f-descripcion" maxlength="200"></label>
+        </div>
+        <p class="nota" id="aviso-nube" hidden>Sin Cloudinary configurado: las fotos subidas se pueden borrar cuando el servidor gratuito se reinicia. Revise el README.</p>
+        <button class="btn btn-primario" type="submit">Subir foto</button>
+      </form>
+      <div class="grid-fotos" id="lista-fotos"></div>
+    </section>
+
+    <!-- AJUSTES -->
+    <section class="vista" id="vista-ajustes" hidden>
+      <div class="cabeza"><div><h2>Datos del negocio</h2><p>Se muestran en la página y en los mensajes.</p></div></div>
+      <div class="dos-col">
+        <form class="tarjeta" id="form-ajustes">
+          <div class="rejilla dos">
+            <label class="campo" for="a-nombre"><span>Nombre</span><input id="a-nombre" maxlength="80"></label>
+            <label class="campo" for="a-eslogan"><span>Eslogan</span><input id="a-eslogan" maxlength="120"></label>
+            <label class="campo" for="a-whatsapp"><span>WhatsApp (con indicativo 57)</span><input id="a-whatsapp" inputmode="numeric"></label>
+            <label class="campo" for="a-ciudad"><span>Ciudad</span><input id="a-ciudad" maxlength="80"></label>
+          </div>
+          <label class="campo" for="a-mensaje"><span>Mensaje inicial de WhatsApp</span><input id="a-mensaje" maxlength="300"></label>
+          <label class="campo" for="a-direccion"><span>Dirección para citas en persona</span><input id="a-direccion" maxlength="200" placeholder="Pendiente: escriba la dirección de la oficina"></label>
+          <label class="campo" for="a-horario"><span>Horario (texto en la página)</span><input id="a-horario" maxlength="160"></label>
+          <div class="rejilla dos">
+            <label class="campo" for="a-correo-avisos"><span>Correo donde llegan los avisos</span><input id="a-correo-avisos" type="email"></label>
+            <label class="campo" for="a-correo-publico"><span>Correo visible en la página</span><input id="a-correo-publico" type="email"></label>
+            <label class="campo" for="a-facebook"><span>Facebook (enlace)</span><input id="a-facebook" type="url" placeholder="https://"></label>
+            <label class="campo" for="a-instagram"><span>Instagram (enlace)</span><input id="a-instagram" type="url" placeholder="https://"></label>
+          </div>
+          <fieldset class="campo" style="border:0;padding:0;margin:0 0 12px">
+            <span>Tipos de cita que ofrece</span>
+            <label class="check" for="m-presencial"><input id="m-presencial" type="checkbox" value="presencial"> En persona</label>
+            <label class="check" for="m-llamada"><input id="m-llamada" type="checkbox" value="llamada"> Llamada</label>
+            <label class="check" for="m-videollamada"><input id="m-videollamada" type="checkbox" value="videollamada"> Videollamada</label>
+          </fieldset>
+          <button class="btn btn-primario" type="submit">Guardar datos</button>
+        </form>
+        <form class="tarjeta" id="form-clave">
+          <h3>Cambiar clave del panel</h3>
+          <label class="campo" for="k-actual"><span>Clave actual</span><input id="k-actual" type="password" autocomplete="current-password" required></label>
+          <label class="campo" for="k-nueva"><span>Nueva clave (mínimo 8 caracteres)</span><input id="k-nueva" type="password" autocomplete="new-password" minlength="8" required></label>
+          <button class="btn btn-primario" type="submit">Cambiar clave</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="/js/agenda-comun.js"></script>
+  <script src="/admin/panel.js"></script>
+</body>
+</html>
