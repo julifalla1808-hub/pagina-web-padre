@@ -253,7 +253,7 @@ const a = estado.ajustes;
 if (modalidad === 'presencial') {
 return a.direccion
 ? 'Lo esperamos en: ' + a.direccion + ', ' + a.ciudad + '.'
-: 'Cita en ' + (a.ciudad || 'nuestra oficina') + '. Le confirmaremos la dirección por WhatsApp.';
+: 'Ciudad y lugar de la cita: le confirmaremos la dirección por WhatsApp.';
 }
 if (modalidad === 'llamada') return 'Le llamaremos al celular que nos deje.';
 return 'Le enviaremos el enlace de la videollamada por WhatsApp o correo.';
