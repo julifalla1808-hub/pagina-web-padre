@@ -3,6 +3,9 @@
 'use strict';
 const A = window.AgendaComun;
 const VISTA = window.SGP_VISTA_PREVIA || null;
+const I18N = window.SGP_I18N || { T: (s) => s, idioma: () => 'es', locale: () => 'es-CO' };
+const T = (s) => I18N.T(s);
+const horaTxt = (h) => T(A.hora12(h));
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const estado = {
@@ -45,7 +48,7 @@ return svgIcono('<use href="#icono-wa"/>');
 }
 function enlaceWa(texto) {
 const numero = String(estado.ajustes.whatsapp || '').replace(/\D/g, '');
-return 'https://wa.me/' + numero + '?text=' + encodeURIComponent(texto || estado.ajustes.mensajeWhatsapp || '');
+return 'https://wa.me/' + numero + '?text=' + encodeURIComponent(texto || T(estado.ajustes.mensajeWhatsapp) || '');
 }
 function numeroVisible(n) {
 const d = String(n || '').replace(/\D/g, '');
@@ -54,13 +57,13 @@ return local.length === 10 ? local.slice(0, 3) + ' ' + local.slice(3, 6) + ' ' +
 }
 function fechaLarga(fecha) {
 const [a, m, d] = fecha.split('-').map(Number);
-const t = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
+const t = new Intl.DateTimeFormat(I18N.locale(), { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
 .format(new Date(Date.UTC(a, m - 1, d)));
 return t.charAt(0).toUpperCase() + t.slice(1);
 }
 function nombreMes(mes) {
 const [a, m] = mes.split('-').map(Number);
-const t = new Intl.DateTimeFormat('es-CO', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(a, m - 1, 1)));
+const t = new Intl.DateTimeFormat(I18N.locale(), { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(a, m - 1, 1)));
 return t.charAt(0).toUpperCase() + t.slice(1);
 }
 function moverMes(mes, delta) {
@@ -149,7 +152,7 @@ s.coberturas && s.coberturas.length ? listaChecks(s.coberturas) : null,
 el('div', { clase: 'seguro-pie' }, [
 el('a', {
 clase: 'boton boton-wa', target: '_blank', rel: 'noopener',
-href: enlaceWa('Hola SGP Seguros, quiero cotizar el ' + s.nombre + '.')
+href: enlaceWa(T('Hola SGP Seguros, quiero cotizar el ') + T(s.nombre) + '.')
 }, [iconoWa(), document.createTextNode('Cotizar')]),
 el('button', { clase: 'enlace-flecha', type: 'button', 'data-agendar': s.nombre, texto: 'Agendar asesoría' })
 ])
@@ -181,7 +184,7 @@ el('ul', {}, servicios.map((s) => el('li', { texto: s.nombre })).concat(extras.m
 el('div', { clase: 'acciones' }, [
 el('a', {
 clase: 'boton boton-wa', target: '_blank', rel: 'noopener',
-href: enlaceWa('Hola SGP Seguros, quiero cotizar un plan de ' + cat.toLowerCase() + '.')
+href: enlaceWa(T('Hola SGP Seguros, quiero cotizar un plan de ') + T(cat).toLowerCase() + '.')
 }, [iconoWa(), document.createTextNode('Cotizar plan')]),
 el('button', { clase: 'boton boton-borde', type: 'button', 'data-agendar': servicios[0].nombre, texto: 'Agendar' })
 ])
@@ -199,7 +202,7 @@ const posicionesGrandes = new Set([0, 6, 3].slice(0, grandes));
 fotos.forEach((f, i) => {
 lista.append(el('button', {
 clase: 'foto' + (posicionesGrandes.has(i) ? ' grande' : ''), type: 'button',
-'aria-label': 'Ampliar foto: ' + (f.descripcion || 'SGP Seguros'),
+'aria-label': T('Ampliar foto: ') + T(f.descripcion || 'SGP Seguros'),
 onclick: () => abrirVisor(f)
 }, [
 el('img', { src: f.url, alt: f.descripcion || '', loading: 'lazy', width: '600', height: '450' }),
@@ -295,7 +298,7 @@ type: 'button',
 clase: 'dia' + (libre ? ' libre' : '') + (fecha === ag.hoy ? ' hoy' : ''),
 disabled: !libre,
 'aria-selected': String(fecha === ag.fecha),
-'aria-label': fechaLarga(fecha) + (libre ? ', con horas libres' : ', sin cupo'),
+'aria-label': fechaLarga(fecha) + T(libre ? ', con horas libres' : ', sin cupo'),
 texto: String(d),
 onclick: () => elegirDia(fecha)
 }));
@@ -328,7 +331,7 @@ if (!horas.length) {
 ayuda.textContent = 'Ese día ya no tiene horas libres. Elija otro día.';
 return;
 }
-ayuda.textContent = fechaLarga(estado.agenda.fecha) + ': elija una hora.';
+ayuda.textContent = fechaLarga(estado.agenda.fecha) + T(': elija una hora.');
 const manana = horas.filter((h) => A.aMinutos(h.hora) < 720);
 const tarde = horas.filter((h) => A.aMinutos(h.hora) >= 720);
 [['Mañana', manana], ['Tarde', tarde]].forEach(([titulo, lista]) => {
@@ -336,7 +339,7 @@ if (!lista.length) return;
 cont.append(el('p', { clase: 'horas-grupo', texto: titulo }));
 lista.forEach((h) => cont.append(el('button', {
 clase: 'hora', type: 'button', role: 'radio', 'aria-checked': 'false', 'data-hora': h.hora,
-texto: A.hora12(h.hora), onclick: () => elegirHora(h.hora)
+texto: horaTxt(h.hora), onclick: () => elegirHora(h.hora)
 })));
 });
 }
@@ -352,8 +355,8 @@ const ag = estado.agenda;
 const caja = $('#resumen-elegido');
 if (!caja || !ag.fecha || !ag.hora) return;
 caja.textContent = '';
-caja.append('Cita: ', el('b', { texto: fechaLarga(ag.fecha) + ', ' + A.hora12(ag.hora) }));
-if (ag.modalidad) caja.append(' · ', el('b', { texto: MODALIDADES[ag.modalidad].nombre }));
+caja.append(T('Cita: '), el('b', { texto: fechaLarga(ag.fecha) + ', ' + horaTxt(ag.hora) }));
+if (ag.modalidad) caja.append(' · ', el('b', { texto: T(MODALIDADES[ag.modalidad].nombre) }));
 }
 function mostrarErrorCita(texto) {
 const e = $('#cita-error');
@@ -394,25 +397,28 @@ boton.disabled = false;
 boton.textContent = 'Continuar';
 }
 }
+let ultimaCita = null;
 function mostrarConfirmacion(datos) {
+ultimaCita = datos;
 const dl = $('#confirmacion-detalle');
 dl.textContent = '';
 [
 ['Fecha', fechaLarga(datos.fecha)],
-['Hora', A.hora12(datos.hora)],
-['Modalidad', MODALIDADES[datos.modalidad].nombre],
-['Lugar', textoLugar(datos.modalidad)],
-['Seguro', datos.servicio]
+['Hora', horaTxt(datos.hora)],
+['Modalidad', T(MODALIDADES[datos.modalidad].nombre)],
+['Lugar', T(textoLugar(datos.modalidad))],
+['Seguro', T(datos.servicio)]
 ].forEach(([k, v]) => dl.append(el('div', {}, [el('dt', { texto: k }), el('dd', { texto: v })])));
 $('#confirmacion-wa').href = enlaceWa(
-'Hola SGP Seguros, quiero agendar una cita.\n' +
-'Nombre: ' + datos.nombre + '\n' +
-'Celular: ' + datos.telefono + '\n' +
-(datos.correo ? 'Correo: ' + datos.correo + '\n' : '') +
-'Seguro: ' + datos.servicio + '\n' +
-'Modalidad: ' + MODALIDADES[datos.modalidad].nombre + '\n' +
-'Fecha: ' + fechaLarga(datos.fecha) + ', ' + A.hora12(datos.hora) +
-(datos.notas ? '\nNotas: ' + datos.notas : '')
+T('Hola SGP Seguros, quiero agendar una cita.') + '\n' +
+T('Nombre') + ': ' + datos.nombre + '\n' +
+T('Celular') + ': ' + datos.telefono + '\n' +
+(datos.correo ? T('Correo') + ': ' + datos.correo + '\n' : '') +
+T('Seguro') + ': ' + T(datos.servicio) + '\n' +
+T('Modalidad') + ': ' + T(MODALIDADES[datos.modalidad].nombre) + '\n' +
+(datos.modalidad === 'presencial' ? T('Lugar') + ': ' + T(textoLugar(datos.modalidad)) + '\n' : '') +
+T('Fecha') + ': ' + fechaLarga(datos.fecha) + ', ' + horaTxt(datos.hora) +
+(datos.notas ? '\n' + T('Notas') + ': ' + datos.notas : '')
 );
 $('#form-agenda').hidden = true;
 const caja = $('#confirmacion');
@@ -479,14 +485,14 @@ boton.disabled = true;
 boton.textContent = 'Enviando…';
 try {
 await api.mensaje(datos);
-wa.href = enlaceWa('Hola SGP Seguros, soy ' + datos.nombre + ' (' + datos.telefono + (datos.correo ? ', ' + datos.correo : '') + ').\n' + datos.mensaje);
+wa.href = enlaceWa(T('Hola SGP Seguros, soy ') + datos.nombre + ' (' + datos.telefono + (datos.correo ? ', ' + datos.correo : '') + ').\n' + datos.mensaje);
 wa.hidden = false;
 exito.hidden = false;
 wa.focus();
 } catch (e) {
 error.textContent = e.estado && e.estado < 500 ? e.message : 'No pudimos enviar el mensaje. Puede enviarlo por WhatsApp:';
 error.hidden = false;
-wa.href = enlaceWa('Hola SGP Seguros, soy ' + datos.nombre + ' (' + datos.telefono + '). ' + datos.mensaje);
+wa.href = enlaceWa(T('Hola SGP Seguros, soy ') + datos.nombre + ' (' + datos.telefono + '). ' + datos.mensaje);
 wa.hidden = false;
 } finally {
 boton.disabled = false;
@@ -508,6 +514,25 @@ pintarGaleria(datos.fotos || []);
 pintarOpcionesAgenda();
 iniciarAgenda();
 iniciarContacto();
+document.addEventListener('sgp:idioma', () => {
+const elegido = $('#cita-servicio').value;
+pintarAjustes();
+pintarSeguros();
+pintarPlanes();
+pintarGaleria(datos.fotos || []);
+pintarOpcionesAgenda();
+$('#cita-servicio').value = elegido;
+if (estado.agenda.modalidad) elegirModalidad(estado.agenda.modalidad);
+pintarCalendario().then(() => {
+if (!estado.agenda.fecha) return;
+$$('.dia').forEach((b) => b.setAttribute('aria-selected', 'false'));
+const boton = $$('.dia').find((b) => b.getAttribute('aria-label').startsWith(fechaLarga(estado.agenda.fecha)));
+if (boton) boton.setAttribute('aria-selected', 'true');
+const hora = estado.agenda.hora;
+pintarHoras().then(() => { if (hora) elegirHora(hora); });
+});
+if (!$('#confirmacion').hidden && ultimaCita) mostrarConfirmacion(ultimaCita);
+});
 } catch (e) {
 estado.ajustes = { whatsapp: '573207165772', mensajeWhatsapp: 'Hola SGP Seguros, quiero cotizar un seguro.' };
 $$('[data-wa]').forEach((a2) => { a2.href = enlaceWa(); });
