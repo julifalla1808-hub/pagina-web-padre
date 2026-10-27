@@ -177,7 +177,7 @@ DESCRIPCION_PLAN[cat] ? el('p', { clase: 'plan-para', texto: DESCRIPCION_PLAN[ca
 el('p', { clase: 'plan-precio' }, precios.length
 ? [document.createTextNode(precios[0]), el('small', { texto: 'Valor de referencia; depende de la cotización' })]
 : [document.createTextNode('Cotización sin costo'), el('small', { texto: 'Planes ajustados a sus necesidades' })]),
-el('ul', {}, servicios.map((s) => el('li', { texto: s.nombre })).concat(extras.map((n) => el('li', { texto: n })), cat === 'Empresas' ? [el('li', { clase: 'plan-mas', texto: 'Y más pólizas a la medida de su negocio' })] : [])),
+el('ul', {}, servicios.map((s) => el('li', { texto: s.nombre })).concat(extras.map((n) => el('li', { texto: n })), ((VISTA && VISTA.textoMas) || {})[cat] ? [el('li', { clase: 'plan-mas', texto: VISTA.textoMas[cat] })] : [])),
 el('div', { clase: 'acciones' }, [
 el('a', {
 clase: 'boton boton-wa', target: '_blank', rel: 'noopener',
