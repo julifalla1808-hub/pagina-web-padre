@@ -16,7 +16,7 @@ llamada: { nombre: 'Llamada', icono: '<path d="M6.6 3.5h3l1.5 4.2-2 1.4a12 12 0 
 videollamada: { nombre: 'Videollamada', icono: '<rect x="3" y="6" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 10.5l6-3.5v10l-6-3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' }
 };
 const DESCRIPCION_PLAN = {
-'Personas': 'Para usted y su vehículo, en cada trayecto.',
+'Personas': 'Para usted, su vehículo, su vida y su salud.',
 'Hogar y familia': 'Para su vivienda, sus bienes y los suyos.',
 'Empresas': 'Para la continuidad de su negocio.'
 };
@@ -168,6 +168,7 @@ const lista = $('#lista-planes');
 lista.textContent = '';
 grupos.forEach((servicios, cat) => {
 const destacado = servicios.some((s) => s.destacado);
+const extras = ((VISTA && VISTA.productosExtra) || {})[cat] || [];
 const precios = servicios.map((s) => s.precio).filter(Boolean);
 lista.append(el('article', { clase: 'plan' + (destacado ? ' plan-destacado' : '') }, [
 destacado ? el('span', { clase: 'plan-sello', texto: 'Más solicitado' }) : null,
@@ -176,7 +177,7 @@ DESCRIPCION_PLAN[cat] ? el('p', { clase: 'plan-para', texto: DESCRIPCION_PLAN[ca
 el('p', { clase: 'plan-precio' }, precios.length
 ? [document.createTextNode(precios[0]), el('small', { texto: 'Valor de referencia; depende de la cotización' })]
 : [document.createTextNode('Cotización sin costo'), el('small', { texto: 'Planes ajustados a sus necesidades' })]),
-el('ul', {}, servicios.map((s) => el('li', { texto: s.nombre }))),
+el('ul', {}, servicios.map((s) => el('li', { texto: s.nombre })).concat(extras.map((n) => el('li', { texto: n })), cat === 'Empresas' ? [el('li', { clase: 'plan-mas', texto: 'Y más pólizas a la medida de su negocio' })] : [])),
 el('div', { clase: 'acciones' }, [
 el('a', {
 clase: 'boton boton-wa', target: '_blank', rel: 'noopener',
@@ -236,6 +237,7 @@ const select = $('#cita-servicio');
 select.textContent = '';
 select.append(el('option', { value: '', texto: 'Elija un seguro…' }));
 estado.servicios.forEach((s) => select.append(el('option', { value: s.nombre, texto: s.nombre })));
+Object.values((VISTA && VISTA.productosExtra) || {}).flat().forEach((n) => select.append(el('option', { value: n, texto: n })));
 select.append(el('option', { value: 'Asesoría general', texto: 'Asesoría general / otro' }));
 const cont = $('#opciones-modalidad');
 cont.textContent = '';
