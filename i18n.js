@@ -47,8 +47,8 @@ const EN = {
 'Medicina Pre-pagada': 'Prepaid medical plans',
 // Portafolio
 'Portafolio de seguros': 'Insurance portfolio',
-'Un seguro para cada cosa que usted': 'Insurance for everything you',
-'cuida.': 'care about.',
+'Un seguro para lo que usted': 'Insurance for whatever you',
+'desee asegurar.': 'want to insure.',
 'Vehículos, hogar, familia y negocio. Le ayudamos a elegir la cobertura justa y lo acompañamos si ocurre un imprevisto.': 'Vehicles, home, family and business. We help you choose the right coverage and stand by you when the unexpected happens.',
 'Personas': 'Individuals',
 'Hogar y familia': 'Home and family',
